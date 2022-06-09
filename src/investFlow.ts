@@ -126,4 +126,6 @@ const investFlow = async (r: { quantity: number }) => {
   }
 };
 
-(async () => await investFlow({ quantity: 50 }))();
+(async () => await investFlow({ quantity: 50 }))().catch((e: any) => {
+  console.error('Error ', e);
+});
