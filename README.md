@@ -1,4 +1,4 @@
-[![Sdk](https://img.shields.io/badge/sdk%20version-v0.11.9-blue?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@owneraio/finp2p-sdk-js/v/0.11.9)
+[![Sdk](https://img.shields.io/badge/sdk%20version-v0.12.6-blue?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@owneraio/finp2p-sdk-js/v/0.12.6)
 
 # FinP2P wallet samples
 A collection of flows using [finp2p-sdk-js](https://www.npmjs.com/package/@owneraio/finp2p-sdk-js).  
@@ -9,14 +9,15 @@ To be able to run the scripts, you will need to provide a configuration to allow
 Duplicate and rename the `sample.config.ts` file to `config.ts`.  
 Then provide the missing parameters (provided by **Ownera**):
 
-| required | parameter              | value                                       |
-|----------|------------------------|---------------------------------------------|
-| **yes**  | `orgId`                | your organization id                        |
-| **yes**  | `apiKey`               | your organization api key to use FinP2P     |
-| **yes**  | `privateKey`           | your organization private key to use FinP2P |
-| **yes**  | `USER_ID`              | FinP2P profile id of the user to test       |
-| **yes**  | `USER_CUSTODY_ACCOUNT` | Custody account id of the user to test      |
-| *no*     | `ASSET_ID`             | FinP2P profile id of the asset to use       |
+| required | parameter                       | value                                       |
+|----------|---------------------------------|---------------------------------------------|
+| **yes**  | `orgId`                         | your organization id                        |
+| **yes**  | `apiKey`                        | your organization api key to use FinP2P     |
+| **yes**  | `privateKey`                    | your organization private key to use FinP2P |
+| **yes**  | `USER_ID`                       | FinP2P profile id of the user to test       |
+| **yes**  | `USER_CUSTODY_ACCOUNT`          | Custody account id of the user to test      |
+| **yes**  | `OPERATION_SUBSCRIPTION_EXPIRY` | Expiry time for operation completion        |
+| *no*     | `ASSET_ID`                      | FinP2P profile id of the asset to use       |
 
 ## Usage
 The `package.json` file contains a `scripts` section that allows you to run the different flow directly from the command line.  
