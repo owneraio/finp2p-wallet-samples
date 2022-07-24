@@ -1,6 +1,7 @@
 import { prompt } from 'inquirer';
+import chalk from 'chalk';
 import { Asset, FiatAsset, Sdk, SettlementInstructionSourceAccount } from '@owneraio/finp2p-sdk-js';
-import { ASSET_ID, getConfig, orgData, USER_CUSTODY_ACCOUNT, USER_ID } from '../config';
+import { ASSET_ID, getConfig, OPERATION_SUBSCRIPTION_EXPIRY, orgData, USER_CUSTODY_ACCOUNT, USER_ID } from '../config';
 import { SettlementInstructionDestinationAccount } from '@owneraio/finp2p-sdk-js/lib/types/Profiles';
 import { EscrowAccount, PrimarySale } from '@owneraio/finp2p-sdk-js/lib/types/Oss/OssSchemas';
 import { delay, signingMethod } from './utils';
@@ -25,10 +26,10 @@ const investFlow = async (r: { quantity: number }) => {
   // get user holdings - start
   try {
     const initialHoldings = await user.getUserHoldings();
-    console.info(`user ${USER_ID} holdings before issuance`, JSON.stringify(initialHoldings, null, 2));
+    console.info(chalk.blueBright(`user ${USER_ID} holdings before issuance`), JSON.stringify(initialHoldings, null, 2));
     const userAccount = initialHoldings.find(holding => holding.assetType === 'fiat' && Number(holding.balance) > 0);
     if (!userAccount) {
-      console.error(`User ${USER_ID} doesn't have account with credit.`);
+      console.error(chalk.bgRed(`User ${USER_ID} doesn't have account with credit.`));
       process.exit(1);
     }
     sourceAccount = {
@@ -39,12 +40,12 @@ const investFlow = async (r: { quantity: number }) => {
         code: (userAccount.asset as FiatAsset).code,
       },
     };
-  } catch (e: any) {
-    console.error(e);
+  } catch (e) {
+    console.error(chalk.bgRed('Error - get user holdings'), e);
   }
 
   if (!sourceAccount) {
-    console.error(`Not sufficient balance for user ${USER_ID}`);
+    console.error(chalk.red(`Not sufficient balance for user ${USER_ID}`));
     process.exit(1);
   }
 
@@ -59,13 +60,13 @@ const investFlow = async (r: { quantity: number }) => {
     let assetData: Asset | undefined;
     try {
       assetData = await asset.getData();
-    } catch (e: any) {
-      console.error(`Unable to get data for asset "${ASSET_ID}". Please make sure this asset exists.`, e);
+    } catch (e) {
+      console.error(chalk.red(`Unable to get data for asset "${ASSET_ID}". Please make sure this asset exists.`), e);
       process.exit(1);
     }
     const activePrimarySale = assetData.intents.find(i => i.type === 'primarySale' && i.status === 'ACTIVE');
     if (!activePrimarySale) {
-      console.error(`No opened primary sale for asset "${ASSET_ID}".`);
+      console.error(chalk.red(`No opened primary sale for asset "${ASSET_ID}".`));
       process.exit(1);
     }
     primarySaleId = activePrimarySale.id;
@@ -86,7 +87,7 @@ const investFlow = async (r: { quantity: number }) => {
     const assetsWithOpenedPrimarySale = allAssets.filter(a =>
       !!a.intents.find(i => i.type === 'primarySale' && i.status === 'ACTIVE'));
     if (!assetsWithOpenedPrimarySale.length) {
-      console.error(`No asset with opened primary sale is available.`);
+      console.error(chalk.red(`No asset with opened primary sale is available.`));
       process.exit(1);
     }
     const choices = assetsWithOpenedPrimarySale.map(a => `${a.id} - ${a.name}`);
@@ -110,22 +111,34 @@ const investFlow = async (r: { quantity: number }) => {
 
   // Execute the issuance
   try {
-    await user.executeIntent({
+    let operation = await user.executeIntent({
       assetId,
       sourceAccount,
       destinationAccount: destinationAccount!,
       amount: r.quantity.toString(),
       intentId: primarySaleId,
     });
+
+    // check if operation completed or wait for completion
+    if (!operation.isCompleted) {
+      operation = await sdk.owneraAPI.operations.waitOperationCompletion({
+        cid: operation.cid,
+        subscriptionExpiry: OPERATION_SUBSCRIPTION_EXPIRY,
+      });
+    }
+
+    console.log(`Operation ${!!operation.error ? chalk.red('failed') : chalk.green('succeeded')}.
+  ${JSON.stringify(!!operation.error ? operation.error : operation.response?.receipt, null, 2)}`);
+
     await delay(2000);
     // get user holdings - end
     const finalHoldings = await user.getUserHoldings();
-    console.info(`user ${USER_ID} holdings before issuance`, JSON.stringify(finalHoldings, null, 2));
-  } catch (e: any) {
-    console.error('Intent execution failed ', e);
+    console.info(chalk.blueBright(`user ${USER_ID} holdings after issuance`), JSON.stringify(finalHoldings, null, 2));
+  } catch (e) {
+    console.error(chalk.bgRed('Intent execution failed '), e);
   }
 };
 
-(async () => await investFlow({ quantity: 50 }))().catch((e: any) => {
-  console.error('Error ', e);
+(async () => await investFlow({ quantity: 50 }))().catch((e) => {
+  console.error(chalk.bgRed('Error - invest flow failed'), e);
 });
