@@ -77,10 +77,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@owneraio/finp2p-sdk-js@^0.11.9":
-  version "0.11.9"
-  resolved "https://npm.pkg.github.com/download/@owneraio/finp2p-sdk-js/0.11.9/e0cf725b322e470fe046acdd9fca6d9d7790442ee5a7970c23b4b180c692263c#7c1ecf6dc6a3e955d2cc1854b6837ccc3defa380"
-  integrity sha512-+J9Bxv7+pIxuf5qkwohxSKSCclT9eHYCcW63lAOlpYoBLK9HhW6liI4PEsegoH1JUtBrHh+UufkmiE4ZUeVu1g==
+"@owneraio/finp2p-sdk-js@^0.12.6":
+  version "0.12.6"
+  resolved "https://npm.pkg.github.com/download/@owneraio/finp2p-sdk-js/0.12.6/610e248a3a2cbb9e16c271a2fe03183b5d2ceb338fe0e7653aab3f5a4377f194#b560363e45911b1eb9fc022384853bc8b226bffc"
+  integrity sha512-fDxXvmW6cGHmiBGqgC+6yop95+1RuYLOxnT5dtFG/HTrVheFKbGajUQJiVlQZgWWY3raBVs78c1h5+XfWxWz7A==
   dependencies:
     axios "^0.21.0"
     blake2 "^4.0.2"
