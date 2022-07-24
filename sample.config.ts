@@ -1,5 +1,7 @@
 import { OwneraAPIOptions } from '@owneraio/finp2p-sdk-js/lib/types/Core/OwneraAPI';
 
+export const OPERATION_SUBSCRIPTION_EXPIRY = 5000;
+
 const envName = 'demo1';
 const protocol = 'https://';
 

@@ -17,5 +17,9 @@ module.exports = {
   rules: {
     // '@typescript-eslint/comma-dangle': ["error"],
     // "@typescript-eslint/no-unused-expressions": ["error"],
+    'no-extra-boolean-cast': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/restrict-template-expressions': 'off',
   },
 };
