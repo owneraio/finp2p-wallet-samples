@@ -32,3 +32,5 @@ export const signingMethod = (r: { custody: CustodyAdapter, accountId: string })
 
   return Promise.resolve(signatureResponse.signature);
 };
+
+export const getOrgIdFromResourceId = (id: string): string => id.split(':')[0] || id;

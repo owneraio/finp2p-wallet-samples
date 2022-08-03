@@ -4,7 +4,7 @@ import { Asset, FiatAsset, Sdk, SettlementInstructionSourceAccount } from '@owne
 import { ASSET_ID, getConfig, OPERATION_SUBSCRIPTION_EXPIRY, orgData, USER_CUSTODY_ACCOUNT, USER_ID } from '../config';
 import { SettlementInstructionDestinationAccount } from '@owneraio/finp2p-sdk-js/lib/types/Profiles';
 import { EscrowAccount, PrimarySale } from '@owneraio/finp2p-sdk-js/lib/types/Oss/OssSchemas';
-import { delay, signingMethod } from './utils';
+import { delay, getOrgIdFromResourceId, signingMethod } from './utils';
 
 const investFlow = async (r: { quantity: number }) => {
   const sdk = new Sdk(getConfig({ ...orgData }));
@@ -109,6 +109,16 @@ const investFlow = async (r: { quantity: number }) => {
     };
   }
 
+  // Share user with asset org node if needed
+  const assetOrgId = getOrgIdFromResourceId(assetId);
+  const userOrgId = getOrgIdFromResourceId(user.id);
+
+  if (assetOrgId !== userOrgId && !userData.metadata.acl.includes(assetOrgId)) {
+    await user.share([assetOrgId]);
+    console.log(`\nShared user ${chalk.bold.green(user.id)} with ${chalk.bold.green(assetOrgId)}\n`);
+  }
+
+
   // Execute the issuance
   try {
     let operation = await user.executeIntent({
@@ -127,8 +137,8 @@ const investFlow = async (r: { quantity: number }) => {
       });
     }
 
-    console.log(`Operation ${!!operation.error ? chalk.red('failed') : chalk.green('succeeded')}.
-  ${JSON.stringify(!!operation.error ? operation.error : operation.response?.receipt, null, 2)}`);
+    console.log(`\nOperation ${!!operation.error ? chalk.red('failed') : chalk.green('succeeded')}.\nResponse ->
+  ${JSON.stringify(!!operation.error ? operation.error : operation.response?.receipt, null, 2)}\n`);
 
     await delay(2000);
     // get user holdings - end
